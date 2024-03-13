@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <Title> Goal Selection </Title>
+    </head>  
+    <body>
+        <h1> Goal Selection </h1>
+        <div>
+            <form>
+            <input type="checkbox" id="goalOne" onclick="goalOne()">
+            <label for="goalOne">Goal One</label><br>
+            <p id="text" style="display:none">Goal One</p>
+
+            <input type="checkbox" id="goalTwo" onclick="goalTwo()">
+            <label for="goalTwo">Goal Two</label><br>
+
+            <input type="checkbox" id="goalThree" onclick="goalThree()">
+            <label for="goalOne">Goal Three</label><br>
+
+            <input type="checkbox" id="goalFour" onclick="goalFour()">
+            <label for="goalOne">Goal Four</label><br>
+
+            <input type="checkbox" id="goalFive" onclick="goalFive()">
+            <label for="goalOne">Goal Five</label><br><br>
+
+            <input type="submit"><br><br>
+            <input type="reset">
+            </form>   
+
+            <!--
+            <p id="text2" style="display:none">- Goal Two</p>
+            <p id="text3" style="display:none">- Goal Three</p>
+            <p id="text4" style="display:none">- Goal Four</p>
+            <p id="text5" style="display:none">- Goal Five</p> -->
+        </div>
+        <script>
+            function goalOne() {
+                var checkBox = document.getElementById("goalOne");
+                var text = document.getElementById("text");
+                if(checkBox.checked == true) {
+                    text.style.display = "block";} 
+                else {
+                    text.style.display = "none";}
+            }
+        </script>
+    </body>
+</html>
