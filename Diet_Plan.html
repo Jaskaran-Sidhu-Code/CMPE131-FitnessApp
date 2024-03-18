@@ -1,25 +1,59 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name ="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diet Recommendations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Recommendation</title>
 </head>
 <body>
-    <h1>Welcome to your Diet Recommendation</h1>
-    <p>Fill out your dieting goals, and we'll recommend foods to help you achieve them.</p>
-
+    <h1>Diet Recommendation Form</h1>
     <form id="dietForm">
         <label for="goal">What is your goal?</label>
-        <select name="goal" id="goal">
-            <option value="gain">Gain Weight</option>
-            <option value="lose">Lose Weight</option>
-            <option value="maintain">Maintain Weight</option>
+        <select id="goal" name="goal">
+            <option value="gain">Gain weight</option>
+            <option value="lose">Lose weight</option>
+            <option value="maintain">Maintain weight</option>
         </select>
-
+        <br>
         <label for="focus">What is your focus?</label>
-        <select name="focus" id="focus">
-            <option value="muscle">Gain Muscle</option>
-            <option
+        <select id="focus" name="focus">
+            <option value="muscle">Gain muscle</option>
+            <option value="fat_loss">Lose fat</option>
+            <option value="both">Both</option>
         </select>
+        <br>
+        <button type="button" onclick="getRecommendations()">Get Recommendations</button>
+    </form>
+
+    <div id="recommendations" style="margin-top: 20px;">
+        <!-- Recommendations will be displayed here -->
+    </div>
+
+    <script>
+        function getRecommendations() {
+            const goal = document.getElementById('goal').value;
+            const focus = document.getElementById('focus').value;
+            const recommendationsElement = document.getElementById('recommendations');
+            
+            // Example logic for recommendations - this should be replaced with your own logic
+            const recommendations = {
+                'gain': {
+                    'muscle': ["Chicken breast", "Quinoa", "Eggs", "Oats", "Cottage cheese"],
+                    'both': ["Lean beef", "Salmon", "Tofu", "Brown rice", "Sweet potatoes"]
+                },
+                'lose': {
+                    'fat_loss': ["Leafy greens", "Berries", "Lean proteins like chicken or fish", "Whole grains", "Legumes"]
+                },
+                'maintain': {
+                    'both': ["Mixed nuts", "Avocado", "Whole eggs", "Chia seeds", "Lean meats"]
+                }
+            };
+
+            const goalFocusRecommendations = recommendations[goal]?.[focus] || ["No specific food recommendations available for this choice."];
+            
+            // Display the recommendations
+            recommendationsElement.innerHTML = `<h2>Recommended Foods</h2><ul>${goalFocusRecommendations.map(food => `<li>${food}</li>`).join('')}</ul>`;
+        }
+    </script>
 </body>
+</html>
