@@ -2,58 +2,115 @@
 <html>
     <head>
         <Title> Goal Selection </Title>
+        <style>
+            body {
+                background-color: rgb(255, 255, 255);
+                font-family: Arial, Helvetica, sans-serif;
+                border: 2px solid #ccc;
+                padding: 10px;
+                box-shadow: 0 0 10px #ccc;
+                border-radius: 5px; 
+                height: 125vh;
+                margin: 100;
+            }
+            legend {
+                color:rgb(6, 1, 35);
+                font-size: larger;
+                border: 2px solid #000000;
+                border-radius: 5px; 
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            h1 {
+                color:rgb(6, 1, 35);
+                border: 2px solid #000000;
+                border-radius: 10px; 
+                padding: 10px;
+                box-shadow: 0 0 10px #ccc;
+            }
+            p {
+                color:rgb(57, 73, 151);
+            }
+            button {
+                padding: 10px 50px;
+                font-size: 16px;
+                margin-top: 40px;
+                border: none;
+                cursor: pointer;
+                border-radius: 4px;
+                background-color: rgb(168, 168, 168);
+            }
+            input {
+                padding: 10px 50px;
+                font-size: 16px;
+                margin-top: 40px;
+                border: none;
+                cursor: pointer;
+                border-radius: 4px;
+                background-color: rgb(168, 168, 168);
+            }
+        </style>
     </head>  
     <body>
-        <h1> Goal Selection </h1>
         <div>
-            <input type="checkbox" id="goalOne" onclick="goalOne()">
-            <label for="goalOne">Goal One</label><br>
+            <h1> Goal Selection </h1>
+            <form method="get">
+                <fieldset style="background: #f6f8ff; border: 3px solid #6eab92; border-radius: 10px;">
+                <legend> Goals </legend>
+                    <input type="checkbox" name="goalOne">
+                    <label for="goalOne">Goal One</label><br>
 
-            <input type="checkbox" id="goalTwo" onclick="goalTwo()">
-            <label for="goalTwo">Goal Two</label><br>
+                    <input type="checkbox" name="goalTwo">
+                    <label for="goalTwo">Goal Two</label><br>
 
-            <input type="checkbox" id="goalThree" onclick="goalThree()">
-            <label for="goalOne">Goal Three</label><br>
+                    <input type="checkbox" name="goalThree">
+                    <label for="goalOne">Goal Three</label><br>
 
-            <input type="checkbox" id="goalFour" onclick="goalFour()">
-            <label for="goalOne">Goal Four</label><br>
+                    <input type="checkbox" name="goalFour">
+                    <label for="goalOne">Goal Four</label><br>
 
-            <input type="checkbox" id="goalFive" onclick="goalFive()">
-            <label for="goalOne">Goal Five</label><br><br>
+                    <input type="checkbox" name="goalFive">
+                    <label for="goalOne">Goal Five</label><br><br>
 
-            <p id="text1" style="display:none">Goal One Checked</p>
-            <p id="text2" style="display:none">Goal Two Checked</p>
-            <p id="text3" style="display:none">Goal Three Checked</p>
-            <p id="text4" style="display:none">Goal Four Checked</p>
-            <p id="text5" style="display:none">Goal Five Checked</p>
+                    <input type="submit" >
+                </fieldset>
+            </form>
+        </br>
+            <fieldset style="background: #f6f8ff; border: 3px solid #4238ca; border-radius: 10px;">
+            <legend> Selected Goals </legend>
+            <p id="text1" style="display:none"> - Goal One</p>
+            <p id="text2" style="display:none"> - Goal Two</p>
+            <p id="text3" style="display:none"> - Goal Three</p>
+            <p id="text4" style="display:none"> - Goal Four</p>
+            <p id="text5" style="display:none"> - Goal Five</p>
+            </fieldset>
+        
+            <button type="button"> Next </button> 
 
             <script>
-                function goalOne() {
-                    var checkBox = document.getElementById("goalOne");
-                    var text1 = document.getElementById("text1");
-                    if(checkBox.checked == true) {text1.style.display = "block";} 
-                    else {text1.style.display = "none";}}
-                function goalTwo() {
-                    var checkBox = document.getElementById("goalTwo");
-                    var text2 = document.getElementById("text2");
-                    if(checkBox.checked == true) {text2.style.display = "block";} 
-                    else {text2.style.display = "none";}}
-                function goalThree() {
-                    var checkBox = document.getElementById("goalThree");
-                    var text3 = document.getElementById("text3");
-                    if(checkBox.checked == true) {text3.style.display = "block";} 
-                    else {text3.style.display = "none";}}
-                function goalFour() {
-                    var checkBox = document.getElementById("goalFour");
-                    var text4 = document.getElementById("text4");
-                    if(checkBox.checked == true) {text4.style.display = "block";} 
-                    else {text4.style.display = "none";}}
-                function goalFive() {
-                    var checkBox = document.getElementById("goalFive");
-                    var text5 = document.getElementById("text5");
-                    if(checkBox.checked == true) {text5.style.display = "block";} 
-                    else {text5.style.display = "none";}}
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
 
+                const goalOneCheck = urlParams.get('goalOne');
+                const goalTwoCheck = urlParams.get('goalTwo');
+                const goalThreeCheck = urlParams.get('goalThree');
+                const goalFourCheck = urlParams.get('goalFour');
+                const goalFiveCheck = urlParams.get('goalFive');
+
+                if(goalOneCheck == "on") {text1.style.display = "block";} 
+                else {text1.style.display = "none"}
+
+                if(goalTwoCheck == "on") {text2.style.display = "block";} 
+                else {text2.style.display = "none"}
+
+                if(goalThreeCheck == "on") {text3.style.display = "block";} 
+                else {text3.style.display = "none"}
+
+                if(goalFourCheck == "on") {text4.style.display = "block";} 
+                else {text4.style.display = "none"}
+
+                if(goalFiveCheck == "on") {text5.style.display = "block";} 
+                else {text5.style.display = "none"}
             </script>
         </div>
     </body>
