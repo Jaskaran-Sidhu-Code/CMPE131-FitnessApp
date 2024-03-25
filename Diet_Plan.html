@@ -4,6 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diet and Calorie Recommendation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+            color: #666;
+        }
+        input[type="number"],
+        select,
+        input[type="radio"],
+        input[type="radio"] + label {
+            margin: 5px 0 15px;
+            display: block;
+            padding: 10px;
+            width: calc(100% - 22px); /* Adjusts for padding and border */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Makes sure padding doesn't add to the width */
+        }
+        input[type="radio"] {
+            display: inline-block;
+            width: auto;
+            margin-top: 0;
+            padding: 0;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #recommendations, #calorieResult {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
     <h1>Diet and Calorie Recommendation Form</h1>
@@ -35,8 +95,8 @@
         <br>
         <button type="button" onclick="calculateCalories()">Calculate Calories</button>
     </form>
-    <div id="calorieResult" style="margin-top: 20px;">
-        <!-- Calorie result will be displayed here -->
+    <div id="calorieResult">
+        <!-- Calorie calculation result will be displayed here -->
     </div>
 
     <h2>Diet Recommendation</h2>
@@ -57,15 +117,17 @@
         <br>
         <button type="button" onclick="getRecommendations()">Get Recommendations</button>
     </form>
-    <div id="recommendations" style="margin-top: 20px;">
+    <div id="recommendations">
         <!-- Recommendations will be displayed here -->
     </div>
 
     <script>
         function calculateBMR(weight, height, age, gender) {
-            return gender === 'male' ? 
-                88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age) :
-                447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            if (gender === 'male') {
+                return 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                return 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            }
         }
 
         function calculateCalories() {
@@ -82,23 +144,18 @@
         function getRecommendations() {
             const goal = document.getElementById('goal').value;
             const focus = document.getElementById('focus').value;
-        
             const recommendationsElement = document.getElementById('recommendations');
             
             const recommendations = {
                 'gain': {
                     'muscle': ["Chicken breast", "Quinoa", "Eggs", "Oats", "Cottage cheese"],
-                    'fat_loss': [], // This scenario isn't targeted but included for structure
                     'both': ["Lean beef", "Salmon", "Tofu", "Brown rice", "Sweet potatoes"]
                 },
                 'lose': {
-                    'fat_loss': ["Leafy greens", "Berries", "Lean proteins like chicken or fish", "Whole grains", "Legumes"],
-                    'muscle': [], // This scenario isn't typical but included for structure
-                    'both': [] // Specific recommendations can be added here
+                    'fat_loss': ["Leafy greens", "Berries", "Lean proteins like chicken or fish", "Whole grains", "Legumes"]
                 },
                 'maintain': {
-                    'both': ["Mixed nuts", "Avocado", "Whole eggs", "Chia seeds", "Lean meats"],
-                    // Not distinguishing between muscle and fat loss for maintenance
+                    'both': ["Mixed nuts", "Avocado", "Whole eggs", "Chia seeds", "Lean meats"]
                 }
             };
 
@@ -110,6 +167,7 @@
     </script>
 </body>
 </html>
+
 
            
 
