@@ -1,74 +1,42 @@
-def get_diet_recommendations():
-    goal = input("Do you want to gain, lose, or maintain weight? Enter gain/lose/maintain: ").lower()
-    if goal not in ['gain', 'lose', 'maintain']:
-        print("Invalid input. Please enter gain, lose, or maintain.")
-        return
-
-    if goal == 'maintain':
-        print("For maintaining weight, a balanced diet rich in fruits, vegetables, whole grains, and lean proteins is recommended.")
-    else:
-        focus = input("Do you want to focus on muscle gain, fat loss, or both? Enter muscle/fat/both: ").lower()
-        if focus not in ['muscle', 'fat', 'both']:
-            print("Invalid input. Please enter muscle, fat, or both.")
-            return
-        
-        if goal == 'gain':
-            if focus == 'muscle':
-                print("For muscle gain, focus on a high-protein diet with lean meats, dairy eggs, and legumes, along with strength training.")
-            elif focus == 'fat':
-                print("Gaining fat is not typically recommened, but focusing on overall weight gain with a balanced diet and perhaps consulting a nutritionist would be beneficial.")
-            else:
-                print("For muscle gain with minimal fat, increase your protein intake and consider a slight caloric surplus with balanced macros. Strength training is key.")
-            
-        elif goal == 'lose':
-            if focus == 'muscle':
-                print("Losing weight while gaining muscle requires a protein-rich diet with a slight caloric deficit and regular strength training.")
-            elif focus == 'fat':
-                print("For fat loss, focus on a caloric deficit with a balanced diet rich in nutrients. Cardio and strenght exercises are beneficial.")
-            else:
-                print("For losing fat and gaining muscle, maintain a moderate caloric deficit, high protein intake, and a consistent exercise routine combining strength and cardio")
-
-def get_food_recommendations(goal, focus):
-    foods = {
-        'gain': {
-            'muscle': ["Chicken breast", "Quinoa", "Eggs", "Oats", "Cottage cheese"],
-            'fat loss': [], #not recommending foods for fat gain
-            'both': ["Lean beef", "Salmon", "Tofu", "Brown rice", "Sweet potatoes"]
-        },
-        'lose': {
-            'muscle': [], #not recommending foods for losing muscle
-            'fat_loss': ["Leafy greens", "Berries", "Lean proteins like chicken or fish", "Whole grains", "Legumes"],
-            'both': [] #not recommending any
-        },
-        'maintain': {
-            'muscle': ["Turkey", "Legumes", "Whole grains", "Nuts and seeds", "Greek yogurt"],
-            'fat_loss': [], #maintenance doesn't typically focus on fat loss
-            'both': ["Mixed nuts", "Avocado", "Whole eggs", "Chia seeds", "Lean meats"]
-        }
-    }
-    return foods.get(goal, {}).get(focus, "No specific food recommendations available for this choice.")
+def calculate_caloric_needs():
+    weight = float(input("Enter your weight in kg: "))
+    height = float(input("Enter your height in cm: "))
+    age = int(input("Enter your age in years: "))
+    gender = input("Enter your gender (male/female): ").lower()
+    print("\nSelect your activity level:")
+    print("1. Sedentary (little or no exercise)")
+    print("2. Lightly active (light exercise/sports 1-3 days/week)")
+    print("3. Moderately active (moderate exercise/sports 3-5 days/week)")
+    print("4. Very active (hard exercise/sports 6-7 days a week)")
+    print("5. Super active (very hard exercise/sports & physical job)")
+    activity_level = int(input("Enter the number corresponding to your activity level: "))
+    
+    bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age) if gender == 'male' else 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
+    tdee = bmr * [1.2, 1.375, 1.55, 1.725, 1.9][activity_level - 1]
+    print(f"\nYour estimated daily calorie needs to maintain your current weight is {tdee:.2f} calories.")
 
 def main():
-    choice = input("Do you want healthy food recommendations? Y/N ").strip().lower()
-    if choice == 'y':
+    if input("Do you want to calculate your daily caloric needs? Y/N ").strip().lower() == 'y':
+        calculate_caloric_needs()
+    
+    if input("\nDo you want healthy food recommendations? Y/N ").strip().lower() == 'y':
         goal = input("Do you want to gain, lose, or maintain your weight? (Gain/Lose/Maintain) ").strip().lower()
-        if goal in ['gain', 'lose', 'maintain']:
-            focus = input("Do you want to gain muscle, lose fat, or do both? (Muscle/Fat/Both) ").strip().lower()
-            recommendations = get_food_recommendations(goal,focus)
-            if recommendations:
-                print(f"Here are some foods you can get to {goal} weight and {focus}:")
-                for food in recommendations:
-                    print(f" - {food}")
-            else:
-                print("Sorry, we don't have recommendations for this specific goal and focus.")
+        if goal not in ['gain', 'lose', 'maintain']:
+            print("Invalid input. Please start over and enter 'Gain', 'Lose', or 'Maintain'.")
+            return
+        focus = input("Do you want to gain muscle, lose fat, or do both? (Muscle/Fat/Both) ").strip().lower() if goal != 'maintain' else 'both'
+        recommendations = get_food_recommendations(goal, focus)
+        if recommendations:
+            print(f"Here are some foods you can eat to {goal} weight and focus on {focus}:")
+            for food in recommendations:
+                print(f" - {food}")
         else:
-            print("Invalid input. Please start over anad enter 'Gain', 'Lose', or 'Maintain'.")
-    elif choice == 'n':
-        print("Okay, feel free to come back if you change your mind!")
+            print("Sorry, we don't have recommendations for this specific goal and focus.")
     else:
-        print("Invalid input. Please start over and enter 'Y' or 'N'.")
+        print("Okay, feel free to come back if you change your mind!")
 
 if __name__ == "__main__":
     main()
+
 
 
