@@ -33,10 +33,10 @@
             margin: 5px 0 15px;
             display: block;
             padding: 10px;
-            width: calc(100% - 22px); /* Adjusts for padding and border */
+            width: calc(100% - 22px);
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-sizing: border-box; /* Makes sure padding doesn't add to the width */
+            box-sizing: border-box;
         }
         input[type="radio"] {
             display: inline-block;
@@ -67,13 +67,17 @@
 </head>
 <body>
     <h1>Diet and Calorie Recommendation Form</h1>
+    
     <h2>Calorie Calculator</h2>
     <form id="calorieForm">
-        <label for="weight">Weight (kg):</label>
+        <label for="weight">Weight (lbs):</label>
         <input type="number" id="weight" name="weight" required>
         <br>
-        <label for="height">Height (cm):</label>
-        <input type="number" id="height" name="height" required>
+        <label for="heightFeet">Height (feet):</label>
+        <input type="number" id="heightFeet" name="heightFeet" required>
+        <br>
+        <label for="heightInches">Height (inches):</label>
+        <input type="number" id="heightInches" name="heightInches" required>
         <br>
         <label for="age">Age:</label>
         <input type="number" id="age" name="age" required>
@@ -122,21 +126,25 @@
     </div>
 
     <script>
-        function calculateBMR(weight, height, age, gender) {
+        function calculateBMR(weightInPounds, heightFeet, heightInches, age, gender) {
+            const weightInKg = weightInPounds * 0.453592; // Convert weight from pounds to kilograms
+            const totalHeightInches = (heightFeet * 12) + heightInches;
+            const heightCm = totalHeightInches * 2.54; // Convert height from feet and inches to centimeters
             if (gender === 'male') {
-                return 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+                return 88.362 + (13.397 * weightInKg) + (4.799 * heightCm) - (5.677 * age);
             } else {
-                return 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+                return 447.593 + (9.247 * weightInKg) + (3.098 * heightCm) - (4.330 * age);
             }
         }
 
         function calculateCalories() {
             const weight = parseFloat(document.getElementById('weight').value);
-            const height = parseFloat(document.getElementById('height').value);
+            const heightFeet = parseInt(document.getElementById('heightFeet').value);
+            const heightInches = parseInt(document.getElementById('heightInches').value);
             const age = parseInt(document.getElementById('age').value);
             const gender = document.querySelector('input[name="gender"]:checked').value;
             const activityLevel = parseFloat(document.getElementById('activityLevel').value);
-            const bmr = calculateBMR(weight, height, age, gender);
+            const bmr = calculateBMR(weight, heightFeet, heightInches, age, gender);
             const tdee = bmr * activityLevel;
             document.getElementById('calorieResult').innerHTML = `<p>Your estimated daily calorie needs are <strong>${tdee.toFixed(2)}</strong> calories to maintain your current weight.</p>`;
         }
@@ -161,12 +169,15 @@
 
             const goalFocusRecommendations = recommendations[goal]?.[focus] || ["No specific food recommendations available for this choice."];
             
-            // Display the recommendations
             recommendationsElement.innerHTML = `<h2>Recommended Foods</h2><ul>${goalFocusRecommendations.map(food => `<li>${food}</li>`).join('')}</ul>`;
         }
     </script>
 </body>
 </html>
+
+
+
+
 
 
            

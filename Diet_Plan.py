@@ -1,6 +1,7 @@
 def calculate_caloric_needs():
-    weight = float(input("Enter your weight in kg: "))
-    height = float(input("Enter your height in cm: "))
+    weight_pounds = float(input("Enter your weight in pounds: "))
+    height_feet = int(input("Enter your height - feet part: "))
+    height_inches = int(input("Enter your height - inches part: "))
     age = int(input("Enter your age in years: "))
     gender = input("Enter your gender (male/female): ").lower()
     print("\nSelect your activity level:")
@@ -11,8 +12,17 @@ def calculate_caloric_needs():
     print("5. Super active (very hard exercise/sports & physical job)")
     activity_level = int(input("Enter the number corresponding to your activity level: "))
     
-    bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age) if gender == 'male' else 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
+    # Convert height to centimeters
+    total_height_inches = (height_feet * 12) + height_inches
+    height_cm = total_height_inches * 2.54
+    
+    # Convert weight from pounds to kilograms
+    weight_kg = weight_pounds * 0.453592
+    
+    # Calculate BMR
+    bmr = 88.362 + (13.397 * weight_kg) + (4.799 * height_cm) - (5.677 * age) if gender == 'male' else 447.593 + (9.247 * weight_kg) + (3.098 * height_cm) - (4.330 * age)
     tdee = bmr * [1.2, 1.375, 1.55, 1.725, 1.9][activity_level - 1]
+    
     print(f"\nYour estimated daily calorie needs to maintain your current weight is {tdee:.2f} calories.")
 
 def main():
@@ -37,6 +47,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
 
 
