@@ -5,9 +5,15 @@ html {
 }
 
 body {
-    max-width: 1000px;
     margin: 0 auto;
-    padding: 50px;
+}
+
+form {
+    padding-inline: 50px;
+}
+
+h1 {
+    padding-inline: 50px;
 }
 
 .form_fieldset {
@@ -71,4 +77,33 @@ body {
 .next_button:hover {
     background-color: #1c2023;
     color: white;
+}
+
+.buttons_fieldset {
+    padding-inline: 50px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0px;
+    overflow: hidden;
+    background-color: #333;
+    width: 100%;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
 }
