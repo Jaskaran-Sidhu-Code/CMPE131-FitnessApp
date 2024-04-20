@@ -20,7 +20,11 @@ def closeDB(error):
     if hasattr(g,'sqlite3_db'):
         g.sqlite3_db.close()
 
-@app.route('/', methods = ["GET","POST"])
+@app.route('/')
+def homePage():
+    return render_template("homePage.html")
+
+@app.route('/goalselect', methods = ["GET","POST"])
 def goalSelect():
     if request.method == "POST":
         print(request.form)
