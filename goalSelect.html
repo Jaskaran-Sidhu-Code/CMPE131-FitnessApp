@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="static/css/styles.css">
+        <Title> Fitness Goal Selection </Title>
+    </head>  
+    <body>
+        <div>
+            <h1> Fitness Goal Selection </h1>
+            <form method="POST">
+                <div class="form_fieldset">
+                    <div class="input_fieldset">
+                    <input type="checkbox" name="goalOne">
+                    <label for="goalOne">Lose Weight</label><br></div>
+
+                    <div class="input_fieldset">
+                    <input type="checkbox" name="goalTwo">
+                    <label for="goalTwo">Maintain Weight</label><br></div>
+
+                    <div class="input_fieldset">
+                    <input type="checkbox" name="goalThree">
+                    <label for="goalThree">Build Upper Body Muscle</label><br></div>
+
+                    <div class="input_fieldset">
+                    <input type="checkbox" name="goalFour">
+                    <label for="goalFour">Build Lower Body Muscle</label><br></div>
+
+                    <div class="input_fieldset">
+                    <input type="checkbox" name="goalFive">
+                    <label for="goalFive">Improve Cardio</label><br><br></div>
+                    
+                    <input class="form_submit" type="submit"><br><br>
+                </div>
+            </form>
+            <br>
+            <button class="next_button" onclick="window.location='/goals'">Next --&gt</button>
+            <button class="back_button" onclick="window.location='/temp'">&lt-- Back</button> 
+        </div>
+    </body>
+</html>

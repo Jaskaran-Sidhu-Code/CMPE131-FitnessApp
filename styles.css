@@ -1,0 +1,74 @@
+html {
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    background-color: #cdcdcd;
+}
+
+body {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 50px;
+}
+
+.form_fieldset {
+    padding: 20px 20px;
+    border-bottom: 5px solid rgba(59, 151, 212, 0.9);
+    border-top: 5px solid rgba(59, 151, 212, 0.9);
+}
+
+.form_fieldset:not(:last-of-type) {
+    border-top: 5px solid rgba(59, 151, 212, 0.9);
+    border-bottom: 5px solid rgba(59, 151, 212, 0.9);
+}
+
+.display_fieldset {
+    padding: 5px 5px;
+    border-bottom: 5px solid rgba(59, 151, 212, 0.9);
+}
+
+.display_fieldset:not(:last-of-type) {
+    border-top: 5px solid rgba(59, 151, 212, 0.9);
+    border-bottom: 5px solid rgba(59, 151, 212, 0.9);
+}
+
+.form_submit {
+    padding: 8px 30px;
+    background-color: unset;
+    border: 2px solid #1c2023;
+    border-radius: 4px;
+    float: left;
+    cursor: pointer;
+}
+
+.form_submit:hover {
+    background-color: #1c2023;
+    color: white;
+}
+
+.back_button {
+    padding: 8px 16px;
+    background-color: unset;
+    border: 2px solid #1c2023;
+    border-radius: 4px;
+    float: left;
+    cursor: pointer;
+}
+
+.back_button:hover {
+    background-color: #1c2023;
+    color: white;
+}
+
+.next_button {
+    padding: 8px 16px;
+    background-color: unset;
+    border: 2px solid #1c2023;
+    border-radius: 4px;
+    float: right;
+    cursor: pointer;
+}
+
+.next_button:hover {
+    background-color: #1c2023;
+    color: white;
+}
