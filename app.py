@@ -5,14 +5,14 @@ userID = "Erich"
 
 app = Flask(__name__)
 
-def connectDB():
+def connectDB(dbName):
     sql = sqlite3.connect('./database.db')
     sql.row_factory = sqlite3.Row
     return sql
 
-def getDB():
+def getDB(dbName):
     if not hasattr(g,'sqlite3'):
-        g.sqlite3_db = connectDB()
+        g.sqlite3_db = connectDB(dbName)
     return g.sqlite3_db
 
 @app.teardown_appcontext
@@ -22,13 +22,14 @@ def closeDB(error):
 
 @app.route('/')
 def homePage():
-    return render_template("homePage.html")
+    user = showGoals(userID)
+    return render_template("homePage.html", usr = user)
 
 @app.route('/goalselect', methods = ["GET","POST"])
 def goalSelect():
     if request.method == "POST":
         print(request.form)
-        db = getDB()
+        db = getDB('./database.db')
         user = request.form.get("user",False)
         goalOne = request.form.get("goalOne",False)
         goalTwo = request.form.get("goalTwo",False)
@@ -47,10 +48,9 @@ def showGoals(user):
     connection.close()
     return results
 
-@app.route("/goals")
-def index():
-    user = showGoals(userID)
-    return render_template("goalDisplay.html", usr = user)
+@app.route('/calorietracker')
+def calorieTracker():
+    return render_template("calorieTracker.html")
 
 @app.route("/temp")
 def temp():
