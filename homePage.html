@@ -9,13 +9,36 @@
         <div>
             <nav>
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="goalselect">Goal Selection</a></li>
-                    <li><a href="goals">Goals</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="/">My Plan</a></li>
+                    <li><a href="goalselect">Select Goals</a></li>
+                    <li><a href="calorietracker">Calorie Tracker</a></li>
                 </ul>
             </nav>
         </div>
+ 
+        <h1><b>{{ usr[0] }}</b>'s Plan</h1>
+        
+        <div class="div_fieldset">
+        <section class="currentgoals">
+        <div class="display_fieldset">
+            <h2>Current Goals</h2>
+               {% if usr[1]=="on" %} <p>-- {{ "Lose Weight" }}</p> {% endif %}
+               {% if usr[2]=="on" %} <p>-- {{ "Maintain Weight" }}</p> {% endif %}
+               {% if usr[3]=="on" %} <p>-- {{ "Build Upper Body Muscle" }}</p> {% endif %}
+               {% if usr[4]=="on" %} <p>-- {{ "Build Lower Body Muscle" }}</p> {% endif %}
+               {% if usr[5]=="on" %} <p>-- {{ "Improve Cardio" }}</p> {% endif %}
+               {% if usr[1]!="on" and usr[2]!="on" and usr[3]!="on" and usr[4]!="on" and usr[5]!="on" %} 
+                                     <p> {{"No goals selected."}}</p> {% endif %}
+            <button class="n_button" onclick="window.location='/goalselect'">Change Goals</button><br><br>
+        </div>
+        </section>
+        <div class="display_fieldset">
 
-        <h1> Home page temp </h1>
+        </div>
+
+            <br>
+            <button class="back_button" onclick="window.location='/'">&lt-- Back</button>
+            <button class="next_button" onclick="window.location='/temp'">Next --&gt</button>
+        </div>
     </body>
+</html>

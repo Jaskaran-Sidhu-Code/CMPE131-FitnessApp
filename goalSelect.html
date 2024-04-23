@@ -2,17 +2,17 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="static/css/styles.css">
         <Title> Fitness Goal Selection </Title>
     </head>  
     <body>
         <div>
-            <nav>
+            <nav class="navbar">
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="goalselect">Goal Selection</a></li>
-                    <li><a href="goals">Goals</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="/">My Plan</a></li>
+                    <li><a href="goalselect">Select Goals</a></li>
+                    <li><a href="calorietracker">Calorie Tracker</a></li>
                 </ul>
             </nav>
         </div>
@@ -21,6 +21,8 @@
             <h1> Fitness Goal Selection </h1>
             <form method="POST">
                 <div class="form_fieldset">
+                    <b>Choose which goals you want to pursue:</b><br><br>
+
                     <div class="input_fieldset">
                     <input type="checkbox" name="goalOne">
                     <label for="goalOne">Lose Weight</label><br></div>
@@ -47,7 +49,7 @@
             <br>
             <div class="buttons_fieldset">
             <button class="next_button" onclick="window.location='/goals'">Next --&gt</button>
-            <button class="back_button" onclick="window.location='/temp'">&lt-- Back</button></div>
+            <button class="back_button" onclick="window.location='/'">&lt-- Back</button></div>
         </div>
     </body>
 </html>
