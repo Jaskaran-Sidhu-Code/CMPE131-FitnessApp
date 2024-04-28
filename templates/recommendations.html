@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diet Recommendations</title>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a> |
+        <a href="/create_profile">Create Profile</a> |
+        <a href="/view_profiles">View Profiles</a> |
+        <a href="/calculate">Calorie Calculator</a> |
+        <a href="/recommendations">Diet Recommendations</a>
+    </nav>
+    <h1>Diet Recommendations</h1>
+    <ul>
+        {% for recommendation in recommendations %}
+        <li>{{ recommendation }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
+

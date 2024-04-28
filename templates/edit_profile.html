@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a> |
+        <a href="/create_profile">Create Profile</a> |
+        <a href="/view_profiles">View Profiles</a> |
+        <a href="/calculate">Calorie Calculator</a> |
+        <a href="/recommendations">Diet Recommendations</a>
+    </nav>
+    <h1>Edit User Profile</h1>
+    <form action="/edit_profile/{{ user.id }}" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ user.name }}" required>
+        <br>
+        <label for="weight">Weight (lbs):</label>
+        <input type="number" id="weight" name="weight" value="{{ user.weight_pounds }}" required>
+        <br>
+        <label for="heightFeet">Height (Feet):</label>
+        <input type="number" id="heightFeet" name="heightFeet" value="{{ user.height_feet }}" required>
+        <br>
+        <label for="heightInches">Height (Inches):</label>
+        <input type="number" id="heightInches" name="heightInches" value="{{ user.height_inches }}" required>
+        <br>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" value="{{ user.age }}" required>
+        <br>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+            <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+        </select>
+        <br>
+        <button type="submit">Update Profile</button>
+    </form>
+</body>
+</html>
+
