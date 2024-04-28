@@ -50,6 +50,39 @@ def view_profiles():
     users = User.query.all()
     return render_template('view_profiles.html', users=users)
 
+@app.route('/edit_profile/<int:id>', methods=['GET', 'POST'])
+def edit_profile(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        try:
+            user.name = request.form['name']
+            user.weight_pounds = float(request.form['weight'])
+            user.height_feet = int(request.form['heightFeet'])
+            user.height_inches = int(request.form['heightInches'])
+            user.age = int(request.form['age'])
+            user.gender = request.form['gender']
+            user.exercise_frequency = request.form['exercise_frequency']
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('view_profiles'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating profile: {str(e)}', 'error')
+    return render_template('edit_profile.html', user=user)
+
+@app.route('/delete_profile/<int:id>', methods=['POST'])
+def delete_profile(id):
+    user = User.query.get_or_404(id)
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        flash('Profile deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting profile: {str(e)}', 'error')
+    return redirect(url_for('view_profiles'))
+
+
 @app.route('/combined_form', methods=['GET', 'POST'])
 def combined_form():
     users = User.query.all()
