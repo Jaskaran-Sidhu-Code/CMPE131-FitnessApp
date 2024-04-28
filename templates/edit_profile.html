@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Profile</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <nav>
         <a href="/">Home</a> |
         <a href="/create_profile">Create Profile</a> |
         <a href="/view_profiles">View Profiles</a> |
-        <a href="/calculate">Calorie Calculator</a> |
-        <a href="/recommendations">Diet Recommendations</a>
+        <a href="/combined_form">Calorie & Diet</a>
     </nav>
     <h1>Edit User Profile</h1>
     <form action="/edit_profile/{{ user.id }}" method="post">
@@ -39,4 +39,7 @@
     </form>
 </body>
 </html>
+
+
+
 

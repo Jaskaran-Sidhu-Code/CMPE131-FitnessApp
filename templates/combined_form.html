@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie and Diet Form</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a> |
+        <a href="/view_profiles">View Profiles</a>
+    </nav>
+    <h1>Calorie Calculator and Diet Recommendations</h1>
+    <form action="/combined_form" method="post">
+        <label for="user_id">Select User:</label>
+        <select id="user_id" name="user_id" required>
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="goal">What is your goal?</label>
+        <select id="goal" name="goal">
+            <option value="gain">Gain weight</option>
+            <option value="lose">Lose weight</option>
+            <option value="maintain">Maintain weight</option>
+        </select>
+        <br>
+        <label for="focus">What is your focus?</label>
+        <select id="focus" name="focus">
+            <option value="muscle">Gain muscle</option>
+            <option value="fat_loss">Lose fat</option>
+            <option value="both">Both</option>
+        </select>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if calories %}
+    <div>
+        <h2>Results for {{ user.name }}</h2>
+        <h3>Caloric Needs: {{ calories }} calories per day.</h3>
+        <h3>Diet Recommendations:</h3>
+        <ul>
+            {% for recommendation in recommendations %}
+            <li>{{ recommendation }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</body>
+</html>
+
+
+
+
+
