@@ -1,18 +1,12 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
+/* Styles for navigation links */
 nav a {
     margin-right: 10px;
+    padding: 8px 12px; /* Uniform padding around the links */
+    text-decoration: none; /* Removes underline from links */
+    color: #5cb85c; /* Standardizes link color */
 }
 
-h1, h2 {
-    color: #333;
-}
-
+/* General form styling */
 form {
     background: #fff;
     padding: 20px;
@@ -21,6 +15,7 @@ form {
     margin-bottom: 20px;
 }
 
+/* Styling for form elements */
 label, input, select, button {
     display: block;
     margin-top: 10px;
@@ -34,6 +29,7 @@ input[type="number"], select {
     box-sizing: border-box;
 }
 
+/* Button styling */
 button {
     background-color: #5cb85c;
     color: white;
@@ -47,3 +43,21 @@ button {
 button:hover {
     background-color: #4cae4c;
 }
+
+/* Styling for list items in view profiles */
+li {
+    list-style-type: none; /* Removes bullet points from list items */
+    margin-bottom: 5px;
+}
+
+/* Inline display for buttons and links within list items */
+li a, li form button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    display: inline-block; /* Ensures elements are lined up in a row */
+}
+
+li form {
+    display: inline; /* Ensures form is inline with other text */
+}
+

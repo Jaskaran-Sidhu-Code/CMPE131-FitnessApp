@@ -99,17 +99,19 @@ def combined_form():
                     gender=user.gender,
                     activity_level=user.exercise_frequency
                 )
+                macronutrients = calculate_macronutrients(calories_needed)
                 recommendations = get_diet_recommendations(
                     goal=request.form['goal'],
                     focus=request.form['focus']
                 )
                 flash('Results calculated successfully.')
-                return render_template('combined_form.html', users=users, user=user, calories=calories_needed, recommendations=recommendations)
+                return render_template('combined_form.html', users=users, user=user, calories=calories_needed, recommendations=recommendations, macronutrients=macronutrients)
             except Exception as e:
-                flash(f'Error in calculation: {str(e)}')
+                flash(f'Error calculating results: {str(e)}')
         else:
             flash('User not found.')
     return render_template('combined_form.html', users=users)
+
 
 def calculate_daily_calories(weight, height_feet, height_inches, age, gender, activity_level):
     height_cm = (height_feet * 12 + height_inches) * 2.54
@@ -118,7 +120,25 @@ def calculate_daily_calories(weight, height_feet, height_inches, age, gender, ac
         bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age + 5
     else:
         bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age - 161
-    return bmr * float(activity_level)
+    total_calories = bmr * float(activity_level)
+    return round(total_calories)
+
+def calculate_macronutrients(calories, protein_pct=30, fat_pct=30, carb_pct=40):
+    protein_calories = (calories * protein_pct) / 100
+    fat_calories = (calories * fat_pct) / 100
+    carb_calories = (calories * carb_pct) / 100
+
+    protein_grams = round(protein_calories / 4)
+    fat_grams = round(fat_calories / 9)
+    carb_grams = round(carb_calories / 4)
+
+    return {
+        'Protein (g)': protein_grams,
+        'Fat (g)': fat_grams,
+        'Carbohydrates (g)': carb_grams
+    }
+
+
 
 def get_diet_recommendations(goal, focus):
     recommendations = {
