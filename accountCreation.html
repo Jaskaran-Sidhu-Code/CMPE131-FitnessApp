@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/styles.css">
+    <title>Account Creation</title>
+    <style>
+        form {
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 0 10px #ccc;
+            border-radius: 5px;
+        }
+        input[type="text"], input[type="password"] {
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <nav>
+            <ul>
+                <li><a href="/">Login</a></li>
+                <li><a href="goalselect">Select Goals</a></li>
+                <li><a href="calorietracker">Calorie Tracker</a></li>
+                <li><a href="home">MyPlan</a></li>
+            </ul>
+        </nav>
+    </div>
+<div>
+    <h2>Account Creation</h2>
+    <form action="/create_account" method="POST">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="password">Enter Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <a href="login" style="text-decoration: none;">
+            <button type="submit">Create</button>
+        </a>    
+        <a href="/" style="text-decoration: none;">
+            <button type="button" style="width: 100%;">Back</button>
+       
+</div> 
+</body>
