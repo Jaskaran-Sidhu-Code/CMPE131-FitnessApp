@@ -10,8 +10,9 @@
             <nav>
                 <ul>
                     <li><a href="home">MyPlan</a></li>
-                    <li><a href="goalselect">Select Goals</a></li>
                     <li><a href="edit_profile">Edit Profile</a></li>
+                    <li><a href="goal_select">Select Goals</a></li>
+                    <li><a href="find_gyms">Find Gyms</a></li>
                     <li class="logout"><a href="logout">Logout</a></li>
                 </ul>
             </nav>
@@ -21,10 +22,17 @@
 
         <div class="section_fieldset">
             <div class="display_fieldset">
-                <p><b>Age:</b> {{userInfo[2]}}</p>
-                <p><b>Gender:</b> {{userInfo[1]}}</p>
-                <p><b>Weight:</b> {{userInfo[3]}} lbs</p>
-                <p><b>Height:</b> {{userInfo[4]}}'{{userInfo[5]}}"</p>
+                <h2>User Info</h2>
+                {% if userInfo[3] %}
+                    <p><b>Age:</b> {{userInfo[2]}}</p>
+                    <p><b>Gender:</b> {{userInfo[1]}}</p>
+                    <p><b>Weight:</b> {{userInfo[3]}} lbs</p>
+                    <p><b>Height:</b> {{userInfo[4]}}'{{userInfo[5]}}"</p>
+                {% endif %}
+                {% if not userInfo[3] %}
+                    <p>{{"Profile not set up."}}</p>
+                {% endif %}
+                <button class="n_button" onclick="window.location='/edit_profile'">Edit Profile</button><br><br>
             </div>
             <div class="display_fieldset">
                 <h2>Current Goals</h2>
@@ -35,7 +43,7 @@
                 {% if usrGoals[5]=="on" %} <p>-- {{ "Lose Fat" }}</p> {% endif %}
                 {% if usrGoals[1]!="on" and usrGoals[2]!="on" and usrGoals[3]!="on" and usrGoals[4]!="on" and usrGoals[5]!="on" %} 
                                            <p> {{"No goals selected."}}</p> {% endif %}
-                <button class="n_button" onclick="window.location='/goalselect'">Change Goals</button><br><br>
+                <button class="n_button" onclick="window.location='/goal_select'">Change Goals</button><br><br>
             </div>
 
             <div class="display_fieldset">
@@ -59,7 +67,7 @@
                     </div>
                 {% endif %}
                 {% if not calories %} 
-                    <p>Profile not set up yet.</p> 
+                    <p>{{"Profile not set up."}}</p>
                 {% endif %}
                 <br><button class="n_button" onclick="window.location='/edit_profile'">Edit Profile</button><br><br>
             </div>

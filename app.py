@@ -1,9 +1,14 @@
 from flask import Flask, g, render_template, request, make_response, session, redirect, flash
 from datetime import timedelta
 import sqlite3 
+import requests
 
 app = Flask(__name__) 
 app.secret_key = "mysecretkey"
+
+# Google API Keys
+PLACES_API_KEY = 'AIzaSyBPMpgZnvRwyiD47P-togXkkGLLAbJ64Jo'
+GEOCODING_API_KEY = 'AIzaSyBPMpgZnvRwyiD47P-togXkkGLLAbJ64Jo'
 
 def connectDB(dbName):
     sql = sqlite3.connect(dbName)
@@ -55,51 +60,68 @@ def create_account():
 @app.route('/home')
 def homePage():
     if not 'username' in session:
-        return redirect("/login")
+        return redirect("/")
     else:
         userGoals = getGoals()
         calorie = calorieInfo()
         return render_template("homePage.html", usr = session['username'], usrGoals = userGoals, userInfo = calorie[3], calories=calorie[0], recommendations=calorie[1], macronutrients=calorie[2])
 
-@app.route('/goalselect', methods = ["GET","POST"])
+@app.route('/goal_select', methods = ["GET","POST"])
 def goalSelect():
-    if request.method == "POST":
-        db = getDB('./fitnessDatabase.db')
-        goalWeight = request.form['goalWeight']
-        if(goalWeight == "goalOne"):
-            goalOne = "on"
-            goalTwo = 0
-            goalThree = 0
-        elif(goalWeight == "goalTwo"):
-            goalOne = 0
-            goalTwo = "on"
-            goalThree = 0
-        elif(goalWeight == "goalThree"):
-            goalOne = 0
-            goalTwo = 0
-            goalThree = "on"
-        goalFour = request.form.get("goalFour",False)
-        goalFive = request.form.get("goalFive",False)
-        db.execute("INSERT OR REPLACE INTO Goals (username,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);", 
-                   [session['username'],goalOne,goalTwo,goalThree,goalFour,goalFive])
-        db.commit()
-    return render_template("goalSelect.html", usr = session['username'])
+    if not 'username' in session:
+        return redirect("/")
+    else:
+        if request.method == "POST":
+            db = getDB('./fitnessDatabase.db')
+            goalWeight = request.form['goalWeight']
+            if(goalWeight == "goalOne"):
+                goalOne = "on"
+                goalTwo = 0
+                goalThree = 0
+            elif(goalWeight == "goalTwo"):
+                goalOne = 0
+                goalTwo = "on"
+                goalThree = 0
+            elif(goalWeight == "goalThree"):
+                goalOne = 0
+                goalTwo = 0
+                goalThree = "on"
+            goalFour = request.form.get("goalFour",False)
+            goalFive = request.form.get("goalFive",False)
+            db.execute("INSERT OR REPLACE INTO Goals (username,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);", 
+                    [session['username'],goalOne,goalTwo,goalThree,goalFour,goalFive])
+            db.commit()
+        return render_template("goalSelect.html", usr = session['username'])
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
-    if request.method == 'POST':
-        db = getDB('./fitnessDatabase.db')
-        weight = float(request.form.get('weight'))
-        heightFeet = int(request.form.get('heightFeet'))
-        heightInch = int(request.form.get('heightInches'))
-        age = int(request.form.get('age'))
-        gender = request.form.get('gender')
-        exerciseFreq = request.form['exercise_frequency']
-        db.execute("INSERT OR REPLACE INTO Diets (username,gender,age,weight,heightFeet,heightInch,exerciseFreq) VALUES (?,?,?,?,?,?,?);",
-                   [session['username'],gender,age,weight,heightFeet,heightInch,exerciseFreq])
-        db.commit()
-        flash('Profile updated successfully!', 'success')
-    return render_template('edit_profile.html', usr=session['username'])
+    if not 'username' in session:
+        return redirect("/")
+    else:
+        if request.method == 'POST':
+            db = getDB('./fitnessDatabase.db')
+            weight = float(request.form.get('weight'))
+            heightFeet = int(request.form.get('heightFeet'))
+            heightInch = int(request.form.get('heightInches'))
+            age = int(request.form.get('age'))
+            gender = request.form.get('gender')
+            exerciseFreq = request.form['exercise_frequency']
+            db.execute("INSERT OR REPLACE INTO Diets (username,gender,age,weight,heightFeet,heightInch,exerciseFreq) VALUES (?,?,?,?,?,?,?);",
+                    [session['username'],gender,age,weight,heightFeet,heightInch,exerciseFreq])
+            db.commit()
+            flash('Profile updated successfully!', 'success')
+        return render_template('edit_profile.html', usr=session['username'])
+
+@app.route('/find_gyms', methods=['GET','POST'])
+def find_gyms():
+    if not 'username' in session:
+        return redirect("/")
+    else:
+        if request.method == 'POST':
+            city = request.form['city']
+            nearby_gyms = get_nearby_gyms(city)
+            return render_template('gyms.html', city=city, gyms=nearby_gyms)
+        return render_template('gyms.html')
 
 def calorieInfo():
     userInfo = getInfo()
@@ -149,7 +171,7 @@ def calorieInfo():
         recommendations = get_diet_recommendations(goal, focus)
                
         return caloriesNeeded, recommendations, macronutrients, userInfo
-    return None,None,None
+    return None,None,None,None
 
 def getGoals():
     connection = sqlite3.connect("fitnessDatabase.db")
@@ -217,6 +239,49 @@ def get_diet_recommendations(goal, focus):
         }
     }
     return recommendations.get(goal, {}).get(focus, ["No specific recommendations for this choice."])
+
+def geocode_address(address):
+    url = 'https://maps.googleapis.com/maps/api/geocode/json'
+    params = {
+        'address': address,
+        'key': GEOCODING_API_KEY
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    if data['status'] == 'OK':
+        location = data['results'][0]['geometry']['location']
+        latitude = location['lat']
+        longitude = location['lng']
+        return latitude, longitude
+    else:
+        return None
+    
+def get_nearby_gyms(city):
+    coordinates = geocode_address(city)
+    if coordinates:
+        lat, lng = coordinates
+        url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+        params = {
+            'location': f"{lat},{lng}",
+            'radius': 5000,  # Search radius in meters
+            'type': 'gym',
+            'key': PLACES_API_KEY
+        }
+        response = requests.get(url, params=params)
+        data = response.json()
+        nearby_gyms = [place['name'] for place in data.get('results', [])]
+
+        # Insert gyms into the database
+        db = getDB('./gyms.db')
+        cursor = db.cursor()
+        for gym in nearby_gyms:
+            cursor.execute("INSERT INTO gyms (name, city, latitude, longitude) VALUES (?, ?, ?, ?)",
+                           (gym, city, lat, lng))
+        db.commit()
+
+        return nearby_gyms
+    else:
+        return []
 
 if __name__ == '__main__':
     app.run(debug=True)
