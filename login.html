@@ -3,66 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/styles.css">
     <title>Login Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        form {
-            border: 1px solid #ccc;
-            padding: 20px;
-            box-shadow: 0 0 10px #ccc;
-            border-radius: 5px;
-        }
-        input[type="text"], input[type="password"] {
-            margin-bottom: 10px;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-    </style>
 </head>
 <body>
-
+    <div>
+        <nav>
+            <ul>
+                <li><a href="home">MyPlan</a></li>
+                    <li><a href="edit_profile">Edit Profile</a></li>
+                    <li><a href="goal_select">Select Goals</a></li>
+                    <li><a href="find_gyms">Find Gyms</a></li>
+                    <li class="logout"><a href="logout">Login</a></li>
+            </ul>
+        </nav>
+    </div>
 <div>
-    <h2>Login</h2>
-    <form id="loginForm">
-        <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+    <h1>Login</h1>
+    <form method="POST">
+        <div class="display_fieldset">
+            <label for="username">Username:</label><br>
+            <input type="text" name="username" required><br>
+
+            <label for="password">Password:</label><br>
+            <input type="password" name="password" required><br>
+
+            <br><input class="form_submit" type="submit"><br><br>
         </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit">Login</button>
+        <button class="n_button" type="button" onclick="window.location='/create_account'">Create Account</button>
     </form>
 </div>
-
-<script>
-    // JavaScript to handle the form submission
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the form from submitting the traditional way
-        
-        var username = document.getElementById('username').value;
-        var password = document.getElementById('password').value;
-        
-        console.log('Username:', username, 'Password:', password);
-
-        // For demonstration, just showing an alert
-        alert('Login attempted with username: ' + username + 'Password used: ' + password);
-        alert(username);
-    });
-</script>
-
 </body>
 </html>

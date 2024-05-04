@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/styles.css">
+    <title>Account Creation</title>
+</head>
+
+<body>
+    <div>
+        <nav>
+            <ul>
+                <li><a href="/">Login</a></li>
+            </ul>
+        </nav>
+    </div>
+<div>
+    <h1>Account Creation</h1>
+    <form action="/create_account" method="POST">
+        <div class="display_fieldset">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required><br>
+
+            <label for="email">Email:</label><br>
+            <input type="text" id="email" name="email" required><br>
+
+            <label for="password">Enter Password:</label><br>
+            <input type="password" id="password" name="password" required><br>
+
+            <br>
+            <input class="form_submit" type="submit" value="Create" onclick="window.location='/'"><br><br>
+        </div>
+</div> 
+</body>
