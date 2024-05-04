@@ -28,11 +28,13 @@ h1 {
 }
 
 .display_fieldset {
-    padding: 5px 5px;
+    padding: 20px 20px;
+    padding-inline: 50px;
     border-bottom: 5px solid rgba(59, 151, 212, 0.9);
 }
 
 .display_fieldset:not(:last-of-type) {
+    padding-inline: 50px;
     border-top: 5px solid rgba(59, 151, 212, 0.9);
     border-bottom: 5px solid rgba(59, 151, 212, 0.9);
 }
@@ -61,6 +63,20 @@ h1 {
 }
 
 .back_button:hover {
+    background-color: #1c2023;
+    color: white;
+}
+
+.n_button {
+    padding: 8px 16px;
+    background-color: unset;
+    border: 2px solid #1c2023;
+    border-radius: 4px;
+    float: left;
+    cursor: pointer;
+}
+
+.n_button:hover {
     background-color: #1c2023;
     color: white;
 }
@@ -106,4 +122,8 @@ li a {
 
 li a:hover {
     background-color: #111;
+}
+
+.logout, .login {
+    float: right;
 }
