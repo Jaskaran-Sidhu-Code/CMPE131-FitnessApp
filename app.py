@@ -1,7 +1,9 @@
-from flask import Flask, g, render_template, request, make_response
-import sqlite3
+from flask import Flask, g, render_template, request, make_response, session, redirect
+from datetime import timedelta
+import sqlite3 
 
-app = Flask(__name__)
+app = Flask(__name__) 
+app.secret_key = "mysecretkey"
 
 def connectDB(dbName):
     sql = sqlite3.connect(dbName)
@@ -20,21 +22,23 @@ def closeDB(error):
 
 @app.route('/', methods=["GET","POST"])
 def login():
-    db = getDB('./loginDatabase.db')
-    current_user = request.form.get('username')
-    password = request.form.get('password')
-    connection = sqlite3.connect('loginDatabase.db')
-    cursor = connection.cursor()
-    cursor.execute("SELECT password FROM Login WHERE username=? and password=?",[current_user, password])
-    pw = cursor.fetchone()
-    connection.close()
-    global currentUser
-    currentUser = current_user
-    try: 
-        if pw[0] == password:
-            return render_template("homePage.html",usr=currentUser)
-    except:
-        return render_template("login.html")
+    if request.method == "POST":
+        username = request.form.get('username')
+        password = request.form.get('password')
+        connection = sqlite3.connect('loginDatabase.db')
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Login WHERE username=? and password=?",[username, password])
+        user = cursor.fetchone()
+        connection.close()
+        if user:
+            session['username'] = request.form['username']
+            return redirect('\home')
+    return render_template("login.html")
+
+@app.route('/logout')
+def logout():
+    session.pop('username',None)
+    return redirect('/')
 
 @app.route('/create_account', methods=["GET","POST"])
 def create_account():
@@ -45,38 +49,42 @@ def create_account():
         password = request.form.get('password')
         db.execute('INSERT INTO Login (username, email, password) VALUES (?,?,?);',[username,email,password])
         db.commit()
+        return redirect('/')
     return render_template("accountCreation.html")
 
 @app.route('/home')
 def homePage():
-    user = showGoals()
-    return render_template("homePage.html", usr = user)
+    if not 'username' in session:
+        return redirect("/login")
+    else:
+        user = showGoals()
+        return render_template("homePage.html", usr = session['username'], usrGoals = user)
 
 @app.route('/goalselect', methods = ["GET","POST"])
 def goalSelect():
     if request.method == "POST":
         print(request.form)
-        db = getDB('./database.db')
+        db = getDB('./goalDatabase.db')
         goalOne = request.form.get("goalOne",False)
         goalTwo = request.form.get("goalTwo",False)
         goalThree = request.form.get("goalThree",False)
         goalFour = request.form.get("goalFour",False)
         goalFive = request.form.get("goalFive",False)
-        db.execute("INSERT OR REPLACE INTO goalselect (user,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);", [currentUser,goalOne,goalTwo,goalThree,goalFour,goalFive])
+        db.execute("INSERT OR REPLACE INTO goalselect (user,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);", [session['username'],goalOne,goalTwo,goalThree,goalFour,goalFive])
         db.commit()
-    return render_template("goalSelect.html",usr=currentUser)
+    return render_template("goalSelect.html", usr = session['username'])
 
 def showGoals():
-    connection = sqlite3.connect("database.db")
+    connection = sqlite3.connect("goalDatabase.db")
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM goalselect WHERE user=?",[currentUser])
+    cursor.execute("SELECT * FROM goalselect WHERE user=?",[session['username']])
     results = cursor.fetchone()
     connection.close()
     return results
 
 @app.route('/calorietracker')
 def calorieTracker():
-    return render_template("calorieTracker.html",usr=currentUser)
+    return render_template("calorieTracker.html", usr=session['username'])
 
 @app.route("/temp")
 def temp():
