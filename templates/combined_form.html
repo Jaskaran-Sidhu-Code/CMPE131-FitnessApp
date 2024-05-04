@@ -13,6 +13,7 @@
     </nav>
     <h1>Calorie Calculator and Diet Recommendations</h1>
     <form action="/combined_form" method="post">
+        <!-- User Selection -->
         <label for="user_id">Select User:</label>
         <select id="user_id" name="user_id" required>
             {% for user in users %}
@@ -20,6 +21,7 @@
             {% endfor %}
         </select>
         <br>
+        <!-- Goal Selection -->
         <label for="goal">What is your goal?</label>
         <select id="goal" name="goal">
             <option value="gain">Gain weight</option>
@@ -27,6 +29,7 @@
             <option value="maintain">Maintain weight</option>
         </select>
         <br>
+        <!-- Focus Selection -->
         <label for="focus">What is your focus?</label>
         <select id="focus" name="focus">
             <option value="muscle">Gain muscle</option>
@@ -37,15 +40,15 @@
         <button type="submit">Submit</button>
     </form>
 
-    {% if calories %}
+    {% if user %}
     <div>
         <h2>Results for {{ user.name }}</h2>
         <h3>Caloric Needs: {{ calories }} calories per day.</h3>
         <h3>Macronutrients:</h3>
         <ul>
-            <li>Protein: {{ macronutrients['Protein (g)'] }} g</li>
-            <li>Fats: {{ macronutrients['Fat (g)'] }} g</li>
-            <li>Carbohydrates: {{ macronutrients['Carbohydrates (g)'] }} g</li>
+            <li>Protein: {{ macros.protein_grams }} grams</li>
+            <li>Fats: {{ macros.fat_grams }} grams</li>
+            <li>Carbohydrates: {{ macros.carbs_grams }} grams</li>
         </ul>
         <h3>Diet Recommendations:</h3>
         <ul>
@@ -55,9 +58,14 @@
         </ul>
     </div>
     {% endif %}
-    
 </body>
 </html>
+
+
+
+
+
+
 
 
 
