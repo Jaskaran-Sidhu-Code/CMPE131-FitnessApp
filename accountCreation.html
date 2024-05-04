@@ -5,24 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/css/styles.css">
     <title>Account Creation</title>
-    <style>
-        form {
-            border: 1px solid #ccc;
-            padding: 20px;
-            box-shadow: 0 0 10px #ccc;
-            border-radius: 5px;
-        }
-        input[type="text"], input[type="password"] {
-            margin-bottom: 10px;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-    </style>
 </head>
 
 <body>
@@ -34,25 +16,22 @@
         </nav>
     </div>
 <div>
-    <h2>Account Creation</h2>
+    <h1>Account Creation</h1>
     <form action="/create_account" method="POST">
-        <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+        <div class="display_fieldset">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required><br>
+
+            <label for="email">Email:</label><br>
+            <input type="text" id="email" name="email" required><br>
+
+            <label for="password">Enter Password:</label><br>
+            <input type="password" id="password" name="password" required><br>
+
+            <br>
+            <input class="form_submit" type="submit" value="Create" onclick="window.location='/'"><br><br>
         </div>
-        <div>
-            <label for="email">Email:</label>
-            <input type="text" id="email" name="email" required>
-        </div>
-        <div>
-            <label for="password">Enter Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <a href="login" style="text-decoration: none;">
-            <button type="submit">Create</button>
-        </a>    
-        <a href="/" style="text-decoration: none;">
-            <button type="button" style="width: 100%;">Back</button>
+            <button class="n_button" type="button" onclick="window.location='/'">Back</button>
        
 </div> 
 </body>

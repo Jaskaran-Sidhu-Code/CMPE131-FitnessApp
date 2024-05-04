@@ -8,11 +8,11 @@
     </head>  
     <body>
         <div>
-            <nav class="navbar">
+            <nav>
                 <ul>
                     <li><a href="home">MyPlan</a></li>
                     <li><a href="goalselect">Select Goals</a></li>
-                    <li><a href="calorietracker">Calorie Tracker</a></li>
+                    <li><a href="edit_profile">Edit Profile</a></li>
                     <li class="logout"><a href="logout">Logout</a></li>
                 </ul>
             </nav>
@@ -21,36 +21,27 @@
         <div>
             <h1> Fitness Goal Selection </h1>
             <form method="POST">
-                <div class="form_fieldset">
-                    <b>Choose which goals you want to pursue:</b><br><br>
+                <div class="display_fieldset">
+                    <b>Choose  you want to pursue:</b><br><br>
 
-                    <div class="input_fieldset">
-                    <input type="checkbox" name="goalOne">
-                    <label for="goalOne">Lose Weight</label><br></div>
+                    <label for="weight">Weight:</label>
+                    <select id="goalWeight" name="goalWeight">
+                        <option value="goalOne">Lose Weight</option>
+                        <option value="goalTwo">Gain Weight</option>
+                        <option value="goalThree">Maintain Weight</option>
+                    </select><br>
 
-                    <div class="input_fieldset">
-                    <input type="checkbox" name="goalTwo">
-                    <label for="goalTwo">Maintain Weight</label><br></div>
-
-                    <div class="input_fieldset">
-                    <input type="checkbox" name="goalThree">
-                    <label for="goalThree">Build Upper Body Muscle</label><br></div>
-
-                    <div class="input_fieldset">
                     <input type="checkbox" name="goalFour">
-                    <label for="goalFour">Build Lower Body Muscle</label><br></div>
+                    <label for="goalFour">Gain Muscle</label><br>
 
-                    <div class="input_fieldset">
                     <input type="checkbox" name="goalFive">
-                    <label for="goalFive">Improve Cardio</label><br><br></div>
+                    <label for="goalFive">Lose Fat</label><br>
                     
-                    <input class="form_submit" type="submit"><br><br>
+                    <br>
+                    <input class="form_submit" type="submit" onclick="window.location='/home'"><br><br>
                 </div>
             </form>
             <br>
-            <div class="buttons_fieldset">
-            <button class="next_button" onclick="window.location='/goals'">Next --&gt</button>
-            <button class="back_button" onclick="window.location='/'">&lt-- Back</button></div>
         </div>
     </body>
 </html>
