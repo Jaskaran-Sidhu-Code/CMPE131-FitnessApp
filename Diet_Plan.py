@@ -82,7 +82,6 @@ def delete_profile(id):
         flash(f'Error deleting profile: {str(e)}', 'error')
     return redirect(url_for('view_profiles'))
 
-
 def calculate_daily_calories(weight, height_feet, height_inches, age, gender, activity_level, goal, focus):
     # Basic metabolic rate calculation
     height_cm = (height_feet * 12 + height_inches) * 2.54
@@ -91,30 +90,32 @@ def calculate_daily_calories(weight, height_feet, height_inches, age, gender, ac
         bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age + 5
     else:
         bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age - 161
-    
-    # Adjust BMR based on activity level
-    calories = bmr * float(activity_level)
-    
+
+    # Apply activity level multiplier
+    activity_factors = {
+        "1.2": 1.2,  # Sedentary
+        "1.375": 1.375,  # Light activity
+        "1.55": 1.55,  # Moderate activity
+        "1.725": 1.725,  # Very active
+        "1.9": 1.9  # Super active
+    }
+    activity_multiplier = activity_factors.get(activity_level, 1.2)  # Default to sedentary if not found
+    calories = bmr * activity_multiplier
+
     # Adjust calories based on goal and focus
-    if goal == 'gain':
-        if focus == 'muscle':
-            calories *= 1.15  # Increase more for muscle gain
-        elif focus == 'fat_loss':
-            calories *= 1.05  # Minimal increase
-        else:
-            calories *= 1.10  # Moderate increase for both
-    elif goal == 'lose':
-        if focus == 'muscle':
-            calories *= 0.85  # Less reduction to protect muscle
-        elif focus == 'fat_loss':
-            calories *= 0.75  # More significant reduction
-        else:
-            calories *= 0.80  # Balanced reduction
-    elif goal == 'maintain':
-        if focus in ['muscle', 'both']:
-            calories *= 1.05  # Slight increase to support activity
-        else:
-            calories *= 0.95  # Slight decrease if focus includes fat loss
+    goal_factors = {
+        ('gain', 'muscle'): 1.15,
+        ('gain', 'fat_loss'): 1.05,
+        ('gain', 'both'): 1.10,
+        ('lose', 'muscle'): 0.85,
+        ('lose', 'fat_loss'): 0.75,
+        ('lose', 'both'): 0.80,
+        ('maintain', 'muscle'): 1.05,
+        ('maintain', 'fat_loss'): 0.95,
+        ('maintain', 'both'): 1.00
+    }
+    goal_multiplier = goal_factors.get((goal, focus), 1.0)  # Default if no specific match
+    calories *= goal_multiplier
 
     return round(calories)
 
@@ -125,80 +126,74 @@ def combined_form():
         user_id = request.form.get('user_id')
         user = User.query.get(user_id)
         if user:
-            try:
-                # Calculate daily calories
-                calories_needed = calculate_daily_calories(
-                    weight=float(user.weight_pounds),
-                    height_feet=int(user.height_feet),
-                    height_inches=int(user.height_inches),
-                    age=int(user.age),
-                    gender=user.gender,
-                    activity_level=user.exercise_frequency,
-                    goal=request.form['goal'],
-                    focus=request.form['focus']
-                )
+            # Fetch and print the activity level to ensure it's received correctly
+            activity_level = request.form.get('activity_level', '1.2')  # Default to '1.2' if not found
+            print("Received Activity Level:", activity_level)
 
-                # Calculate macronutrients
-                macros = calculate_macros(calories_needed, request.form['goal'], request.form['focus'])
+            # Calculate daily calories needed based on input parameters
+            calories_needed = calculate_daily_calories(
+                weight=float(user.weight_pounds),
+                height_feet=int(user.height_feet),
+                height_inches=int(user.height_inches),
+                age=int(user.age),
+                gender=user.gender,
+                activity_level=activity_level,
+                goal=request.form['goal'],
+                focus=request.form['focus']
+            )
 
-                # Get dietary recommendations
-                recommendations = get_diet_recommendations(
-                    goal=request.form['goal'],
-                    focus=request.form['focus']
-                )
+            # Calculate macronutrients based on the calories needed and other factors
+            macros = calculate_macros(
+                calories=calories_needed,
+                goal=request.form['goal'],
+                focus=request.form['focus'],
+                activity_level=activity_level
+            )
 
-                # Flash a success message
-                flash('Results calculated successfully.')
+            # Fetch dietary recommendations based on the user's goal and focus
+            recommendations = get_diet_recommendations(
+                goal=request.form['goal'],
+                focus=request.form['focus']
+            )
 
-                # Render the same page with results
-                return render_template('combined_form.html', users=users, user=user, calories=calories_needed, macros=macros, recommendations=recommendations)
-        
-            except Exception as e:
-                flash(f'Error calculating results: {str(e)}')
-                return redirect(url_for('combined_form'))
+            # Display results and debug information
+            flash('Results calculated successfully.')
+            print("Calories Needed:", calories_needed)
+            print("Macros:", macros)
+
+            # Render the page with the results to the user
+            return render_template('combined_form.html', users=users, user=user, calories=calories_needed, macros=macros, recommendations=recommendations)
         else:
             flash('User not found.')
+            print("User not found")
 
-    # Render page without any results if it's a GET request or if there was an error
+    # Render the form page without results if no POST request or an error occurred
+    print("Rendering Page without results")
     return render_template('combined_form.html', users=users)
 
 
 
-def calculate_macros(calories, goal, focus):
+def calculate_macros(calories, goal, focus, activity_level):
     # Default macronutrient distribution
     protein_pct = 0.30
     fat_pct = 0.30
     carbs_pct = 0.40
 
-    # Adjust macronutrient distribution based on goal and focus
-    if goal == 'lose':
-        if focus == 'muscle':
-            protein_pct = 0.40
-            fat_pct = 0.30
-            carbs_pct = 0.30
-        elif focus == 'fat_loss':
-            protein_pct = 0.35
-            fat_pct = 0.25
-            carbs_pct = 0.40
-        elif focus == 'both':
-            protein_pct = 0.35
-            fat_pct = 0.30
-            carbs_pct = 0.35
-    elif goal == 'maintain':
-        # The default distribution is generally good for maintenance
-        pass
-    elif goal == 'gain':
-        if focus == 'muscle':
-            protein_pct = 0.30
-            fat_pct = 0.25
-            carbs_pct = 0.45
-        elif focus == 'fat_loss':
-            # Unusual to gain weight and focus on fat loss, default ratios used
-            pass
-        elif focus == 'both':
-            protein_pct = 0.25
-            fat_pct = 0.20
-            carbs_pct = 0.55
+    # Adjust macronutrient distribution based on goal, focus, and activity level
+    if activity_level == "1.725" or activity_level == "1.9":  # Very active or super active
+        carbs_pct += 0.05  # Increase carbs for high activity
+        protein_pct -= 0.02  # Slightly less protein
+        fat_pct -= 0.03  # Slightly less fat
+
+    # Further adjustments based on goal and focus
+    if goal == 'lose' and focus == 'muscle':
+        protein_pct = 0.40
+        fat_pct = 0.30
+        carbs_pct = 0.30
+    elif goal == 'gain' and focus == 'muscle':
+        protein_pct = 0.30
+        fat_pct = 0.25
+        carbs_pct = 0.45
 
     protein = calories * protein_pct / 4  # 1 gram of protein = 4 calories
     fat = calories * fat_pct / 9          # 1 gram of fat = 9 calories
@@ -209,8 +204,6 @@ def calculate_macros(calories, goal, focus):
         'fat_grams': round(fat),
         'carbs_grams': round(carbs)
     }
-
-
 
 
 
