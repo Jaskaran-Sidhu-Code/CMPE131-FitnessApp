@@ -1,13 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate  # Import Flask-Migrate
+from datetime import date
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'your_secret_key'
-app.debug = True  # Ensure debug is enabled for development
+app.debug = True
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)  # Initialize migrate
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,6 +21,16 @@ class User(db.Model):
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
     exercise_frequency = db.Column(db.String(50), nullable=False)
+
+class FoodEntry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    food_name = db.Column(db.String(100), nullable=False)
+    calories = db.Column(db.Integer, nullable=False)
+    protein = db.Column(db.Float, nullable=True)
+    carbs = db.Column(db.Float, nullable=True)
+    fats = db.Column(db.Float, nullable=True)
+    date = db.Column(db.Date, default=date.today)
 
 @app.route('/')
 def home():
@@ -229,10 +242,8 @@ def get_diet_recommendations(goal, focus):
 
 @app.cli.command("init_db")
 def init_db():
-    """Clear existing data and create new tables."""
-    db.drop_all()
-    db.create_all()
-    print("Initialized the database.")
+    """This command will be deprecated, use Flask-Migrate instead for handling migrations."""
+    pass
 
 if __name__ == "__main__":
     app.run(debug=True)
