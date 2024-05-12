@@ -1,5 +1,4 @@
 from flask import Flask, g, render_template, request, make_response, session, redirect, flash
-from datetime import timedelta
 import sqlite3 
 import requests
 
@@ -37,7 +36,7 @@ def login():
         connection.close()
         if user:
             session['username'] = request.form['username']
-            return redirect('\home')
+            return redirect('/home')
     return render_template("login.html")
 
 @app.route('/logout')
@@ -52,9 +51,20 @@ def create_account():
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
-        db.execute('INSERT INTO Login (username, email, password) VALUES (?,?,?);',[username,email,password])
-        db.commit()
-        return redirect('/')
+        connection = sqlite3.connect('fitnessDatabase.db')
+        cursor = connection.cursor()
+        cursor.execute('SELECT username FROM Login WHERE username=?;',[username])
+        user = cursor.fetchone()
+        if not user:
+            db.execute('INSERT INTO Login (username, email, password) VALUES (?,?,?);',[username,email,password])
+            db.execute('INSERT INTO Calories (username, calCon, calBurn) VALUES (?,?,?)',[username,0,0])
+            db.execute("INSERT INTO Goals (username,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);", 
+                    [username,0,0,0,0,0])
+            db.commit()
+            return redirect('/')
+        else:
+            errormsg = "Username in use."
+            return render_template("accountCreation.html", errormsg = errormsg)
     return render_template("accountCreation.html")
 
 @app.route('/home')
@@ -64,7 +74,10 @@ def homePage():
     else:
         userGoals = getGoals()
         calorie = calorieInfo()
-        return render_template("homePage.html", usr = session['username'], usrGoals = userGoals, userInfo = calorie[3], calories=calorie[0], recommendations=calorie[1], macronutrients=calorie[2])
+        print(calorie[4])
+        return render_template("homePage.html", usr = session['username'], 
+                               usrGoals = userGoals, userInfo = calorie[3], calories=calorie[0], 
+                               recommendations=calorie[1], macronutrients=calorie[2], status=calorie[4])
 
 @app.route('/goal_select', methods = ["GET","POST"])
 def goalSelect():
@@ -112,6 +125,50 @@ def edit_profile():
             flash('Profile updated successfully!', 'success')
         return render_template('edit_profile.html', usr=session['username'])
 
+def getCalories():
+    connection = sqlite3.connect('fitnessDatabase.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM Calories WHERE username=?",[session['username']])
+    userCal = cursor.fetchone()
+    connection.close()
+    calCon = userCal[1]
+    calBurn = userCal[2]
+    return calCon,calBurn
+
+@app.route('/calorie_tracker', methods=['GET','POST'])
+def calorie_tracker():
+    calCon, calBurn = getCalories()
+    if request.method == "POST":
+        db = getDB('./fitnessDatabase.db')
+        if 'caloriesConsumed' in request.form:
+            calConsumed = int(request.form.get('caloriesConsumed')) 
+            tCalCon = calConsumed + calCon
+            tCalBurn = calBurn
+            db.execute("REPLACE INTO Calories (username, calCon, calBurn) VALUES (?, ?, ?)",
+                       [session['username'], tCalCon, tCalBurn])
+            db.commit()
+            return render_template('calorieTracker.html',tCalCon=tCalCon, tCalBurn=tCalBurn)
+        elif 'caloriesBurned' in request.form:
+            calBurned = int(request.form.get('caloriesBurned'))
+            tCalCon = calCon
+            tCalBurn = calBurned + calBurn
+            db.execute("REPLACE INTO Calories (username, calCon, calBurn) VALUES (?, ?, ?)",
+                       [session['username'], tCalCon, tCalBurn])
+            db.commit()
+            return render_template('calorieTracker.html',tCalCon=tCalCon, tCalBurn=tCalBurn)
+        elif 'resetCon' in request.form:
+            db.execute("REPLACE INTO Calories (username, calCon, calBurn) VALUES (?, ?, ?)",
+                       [session['username'], 0, calBurn])
+            db.commit()
+            return render_template('calorieTracker.html',tCalCon=0, tCalBurn=calBurn)
+        elif 'resetBurn' in request.form:
+            db.execute("REPLACE INTO Calories (username, calCon, calBurn) VALUES (?, ?, ?)",
+                       [session['username'], calCon, 0])
+            db.commit()
+            return render_template('calorieTracker.html',tCalCon=calCon, tCalBurn=0)
+    else:
+        return render_template('calorieTracker.html',tCalCon=calCon, tCalBurn=calBurn)
+
 @app.route('/find_gyms', methods=['GET','POST'])
 def find_gyms():
     if not 'username' in session:
@@ -134,47 +191,53 @@ def calorieInfo():
         heightFeet = userInfo[4]
         heightInch = userInfo[5]
         activityLevel = userInfo[6]
+        status = "set"
 
-        if(userGoals[2]=="on" and userGoals[4]=="on" and userGoals[5]==0):
+        if(userGoals[2]=="on" and userGoals[4]=="on" and userGoals[5]=="0"):
             goal = "gain"
             focus = "muscle"
         elif((userGoals[2]=="on" and userGoals[5]=="on") or userGoals[5]=="on"):
             goal = "gain"
             focus = "both"
-        elif(userGoals[1]=="on" and userGoals[4]=="on" and userGoals[5]==0):
+        elif(userGoals[1]=="on" and userGoals[4]=="on" and userGoals[5]=="0"):
             goal = "lose"
             focus = "muscle"
-        elif(userGoals[1]=="on" and userGoals[5]=="on" and userGoals[4]==0):
+        elif(userGoals[1]=="on" and userGoals[5]=="on" and userGoals[4]=="0"):
             goal = "lose"
             focus = "fat"
         elif(userGoals[1]=="on" and userGoals[4]=="on" and userGoals[5]=="on"):
             goal = "lose"
             focus = "both"
-        elif(userGoals[3]=="on" and userGoals[4]=="on" and userGoals[5]==0):
+        elif(userGoals[3]=="on" and userGoals[4]=="on" and userGoals[5]=="0"):
             goal = "maintain"
             focus = "muscle"
-        elif(userGoals[3]=="on" and userGoals[5]=="on" and userGoals[4]==0):
+        elif(userGoals[3]=="on" and userGoals[5]=="on" and userGoals[4]=="0"):
             goal = "maintain"
             focus = "muscle"
         elif(userGoals[3]=="on" and userGoals[4]=="on" and userGoals[5]=="on"):
             goal = "maintain"
             focus = "both"
-        elif(userGoals[2]=="on" and userGoals[4]==0 and userGoals[5]==0):
+        elif(userGoals[2]=="on" and userGoals[4]=="0" and userGoals[5]=="0"):
             goal = "gain"
             focus = "fat"
+        elif(userGoals[1]=="0" and userGoals[2]=="0" and userGoals[3]=="0" and userGoals[4]=="0" and userGoals[5]=="0"):
+            status = "not_set"
         else:
             goal = "gain"
             focus = "muscle"
 
-        caloriesNeeded = calculate_daily_calories(weight,heightFeet,heightInch,age,gender,activityLevel)
-        macronutrients = calculate_macronutrients(caloriesNeeded)
-        recommendations = get_diet_recommendations(goal, focus)
+        caloriesNeeded = calculate_daily_calories(weight,heightFeet,heightInch,age,gender,activityLevel,goal,focus)
+        macronutrients = calculate_macronutrients(caloriesNeeded,goal,focus,activityLevel)
+        if status == "set":
+            recommendations = get_diet_recommendations(goal, focus)
+        else:
+            recommendations = 0
                
-        return caloriesNeeded, recommendations, macronutrients, userInfo
-    return None,None,None,None
+        return caloriesNeeded, recommendations, macronutrients, userInfo, status
+    return None,None,None,None,None
 
 def getGoals():
-    connection = sqlite3.connect("fitnessDatabase.db")
+    connection = sqlite3.connect('fitnessDatabase.db')
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM Goals WHERE username=?",[session['username']])
     goals = cursor.fetchone()
@@ -195,29 +258,72 @@ def getInfo():
     else:
         return "noEntry"
 
-def calculate_daily_calories(weight, height_feet, height_inches, age, gender, activity_level):
+def calculate_daily_calories(weight, height_feet, height_inches, age, gender, activity_level, goal, focus):
     height_cm = (height_feet * 12 + height_inches) * 2.54
     weight_kg = weight * 0.453592
     if gender == 'male':
         bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age + 5
     else:
         bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age - 161
-    total_calories = bmr * float(activity_level)
-    return round(total_calories)
 
-def calculate_macronutrients(calories, protein_pct=30, fat_pct=30, carb_pct=40):
-    protein_calories = (calories * protein_pct) / 100
-    fat_calories = (calories * fat_pct) / 100
-    carb_calories = (calories * carb_pct) / 100
+    activity_factors = {
+        "1.2": 1.2,  # Sedentary
+        "1.375": 1.375,  # Light activity
+        "1.55": 1.55,  # Moderate activity
+        "1.725": 1.725,  # Very active
+        "1.9": 1.9  # Super active
+    }
+    activity_multiplier = activity_factors.get(activity_level, 1.2)
+    calories = bmr * activity_multiplier
 
-    protein_grams = round(protein_calories / 4)
-    fat_grams = round(fat_calories / 9)
-    carb_grams = round(carb_calories / 4)
+    goal_factors = {
+        ('gain', 'muscle'): 1.15,
+        ('gain', 'fat_loss'): 1.05,
+        ('gain', 'both'): 1.10,
+        ('lose', 'muscle'): 0.85,
+        ('lose', 'fat_loss'): 0.75,
+        ('lose', 'both'): 0.80,
+        ('maintain', 'muscle'): 1.05,
+        ('maintain', 'fat_loss'): 0.95,
+        ('maintain', 'both'): 1.00
+    }
+    goal_multiplier = goal_factors.get((goal, focus), 1.0)
+    calories *= goal_multiplier
+
+    print(calories)
+    return round(calories)
+
+def calculate_macronutrients(calories, goal, focus, activity_level):
+    protein_pct = 0.30
+    fat_pct = 0.30
+    carbs_pct = 0.40
+
+    if activity_level == "1.725" or activity_level == "1.9":  # Very active or super active
+        carbs_pct += 0.05  # Increase carbs for high activity
+        protein_pct -= 0.02  # Slightly less protein
+        fat_pct -= 0.03  # Slightly less fat
+
+    if goal == 'lose' and focus == 'muscle':
+        protein_pct = 0.40
+        fat_pct = 0.30
+        carbs_pct = 0.30
+    elif goal == 'gain' and focus == 'muscle':
+        protein_pct = 0.30
+        fat_pct = 0.25
+        carbs_pct = 0.45
+
+    protein = calories * protein_pct / 4  # 1 gram of protein = 4 calories
+    fat = calories * fat_pct / 9          # 1 gram of fat = 9 calories
+    carbs = calories * carbs_pct / 4      # 1 gram of carbs = 4 calories
+
+    print(round(protein))
+    print(round(fat))
+    print(round(carbs))
 
     return {
-        'Protein (g)': protein_grams,
-        'Fat (g)': fat_grams,
-        'Carbohydrates (g)': carb_grams
+        'protein_grams': round(protein),
+        'fat_grams': round(fat),
+        'carbs_grams': round(carbs)
     }
 
 def get_diet_recommendations(goal, focus):
@@ -285,7 +391,3 @@ def get_nearby_gyms(city):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-

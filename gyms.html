@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/styles.css">
+    <title>Find Nearby Gyms</title>
+</head>
+<body>
+    <div>
+        <nav>
+            <ul>
+                <li><a href="home">MyPlan</a></li>
+                <li><a href="edit_profile">Edit Profile</a></li>
+                <li><a href="goal_select">Select Goals</a></li>
+                <li><a href="calorie_tracker">Calorie Tracker</a></li>
+                <li><a href="find_gyms">Find Gyms</a></li>
+                <li class="logout"><a href="logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <h1>Find Nearby Gyms</h1>
+        <form method="post">
+            <div class="display_fieldset">
+                <label for="city">Enter City/Town:</label><br>
+                <input type="text" id="city" name="city" required><br>
+                <br>
+                <input class="form_submit" type="submit" value="Search"><br><br>
+            </div>
+        </form>
+
+    {% if city %}
+    <div class="section_fieldset">
+        <div class="display_fieldset">
+            <h2>Nearby Gyms in {{ city }}</h2>
+                {% for gym in gyms %}
+                <p>{{ gym }}</p>
+                {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</body>
+</html>
