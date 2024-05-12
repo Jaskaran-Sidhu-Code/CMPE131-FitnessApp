@@ -16,7 +16,7 @@
         </nav>
     </div>
 <div>
-    <h1>Account Creation</h1>
+    <h1>Account Create</h1>
     <form action="/create_account" method="POST">
         <div class="display_fieldset">
             <label for="username">Username:</label><br>
@@ -29,7 +29,9 @@
             <input type="password" id="password" name="password" required><br>
 
             <br>
-            <input class="form_submit" type="submit" value="Create" onclick="window.location='/'"><br><br>
+            <input class="form_submit" type="submit" value="Create"><br>
+            <p style="color:red">{% if errormsg %}{{ errormsg }} {% endif %}</p>
         </div>
+        <button class="n_button" onclick="window.location='/'">Back</button>
 </div> 
 </body>
