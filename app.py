@@ -130,7 +130,6 @@ def getCalories():
     cursor.execute("SELECT * FROM Calories WHERE username=?",[session['username']])
     userCal = cursor.fetchone()
     connection.close()
-    print(userCal)
     calCon = userCal[1]
     calBurn = userCal[2]
     calRec = userCal[3]
@@ -190,6 +189,8 @@ def calorieInfo():
     userGoals = getGoals()
     calCon,calBurn,calRec = getCalories()
 
+    print(userGoals)
+
     if userInfo != "noEntry":
         gender = userInfo[1]
         age = userInfo[2]
@@ -201,10 +202,12 @@ def calorieInfo():
         goal = "gain"
         focus = "muscle"
 
+        print(activityLevel)
+
         if(userGoals[2]=="on" and userGoals[4]=="on" and userGoals[5]=="0"):
             goal = "gain"
             focus = "muscle"
-        elif((userGoals[2]=="on" and userGoals[5]=="on") or userGoals[5]=="on"):
+        elif(userGoals[2]=="on" and userGoals[4]=="on" and userGoals[5]=="on"):
             goal = "gain"
             focus = "both"
         elif(userGoals[1]=="on" and userGoals[4]=="on" and userGoals[5]=="0"):
@@ -221,7 +224,7 @@ def calorieInfo():
             focus = "muscle"
         elif(userGoals[3]=="on" and userGoals[5]=="on" and userGoals[4]=="0"):
             goal = "maintain"
-            focus = "muscle"
+            focus = "fat"
         elif(userGoals[3]=="on" and userGoals[4]=="on" and userGoals[5]=="on"):
             goal = "maintain"
             focus = "both"
@@ -231,6 +234,9 @@ def calorieInfo():
         elif(userGoals[1]=="0" and userGoals[2]=="0" and userGoals[3]=="0" and userGoals[4]=="0" and userGoals[5]=="0"):
             status = "not_set"
 
+        print(goal)
+        print(focus)
+
         caloriesNeeded = calculate_daily_calories(weight,heightFeet,heightInch,age,gender,activityLevel,goal,focus)
         macronutrients = calculate_macronutrients(caloriesNeeded,goal,focus,activityLevel)
         if status == "set":
@@ -239,6 +245,7 @@ def calorieInfo():
             recommendations = 0
 
         print(caloriesNeeded)
+
         db = getDB('./fitnessDatabase.db')
         db.execute("REPLACE INTO Calories (username,calCon,calBurn,calRec) VALUES (?,?,?,?)",
                    [session['username'],calCon,calBurn,caloriesNeeded])
@@ -289,17 +296,17 @@ def calculate_daily_calories(weight, height_feet, height_inches, age, gender, ac
 
     goal_factors = {
         ('gain', 'muscle'): 1.15,
-        ('gain', 'fat_loss'): 1.05,
+        ('gain', 'fat'): 1.05,
         ('gain', 'both'): 1.10,
         ('lose', 'muscle'): 0.85,
-        ('lose', 'fat_loss'): 0.75,
+        ('lose', 'fat'): 0.75,
         ('lose', 'both'): 0.80,
         ('maintain', 'muscle'): 1.05,
-        ('maintain', 'fat_loss'): 0.95,
+        ('maintain', 'fat'): 0.95,
         ('maintain', 'both'): 1.00
     }
     goal_multiplier = goal_factors.get((goal, focus), 1.0)
-    calories *= goal_multiplier
+    calories = calories * goal_multiplier
 
     return round(calories)
 
