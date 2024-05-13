@@ -41,6 +41,9 @@
                 <div class="section_fieldset">
                     Total Calories Consumed: {{tCalCon}} C
                     <input class="next_button" type="submit" name="resetCon" value="Reset">
+                    {% if (tCalCon-tCalBurn) >= calRec and calRec != 0 %}
+                        <br>{{"Daily calorie goal met!"}}
+                    {% endif %}
                 </div>
             </form>
             {% endif %}
