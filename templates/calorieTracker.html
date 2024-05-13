@@ -41,12 +41,25 @@
                 <div class="section_fieldset">
                     Total Calories Consumed: {{tCalCon}} C
                     <input class="next_button" type="submit" name="resetCon" value="Reset">
-                    {% if (tCalCon-tCalBurn) >= calRec and calRec != 0 %}
-                        <br>{{"Daily calorie goal met!"}}
-                    {% endif %}
                 </div>
             </form>
             {% endif %}
+            <br><br>
+            <div class="section_fieldset">
+                <div class="display_fieldset">
+                    <div class="row">
+                    <div class="column">
+                        <h3><b>Net Calories</b></h3> {{tCalCon-tCalBurn}} C
+                    </div>
+                    <div class="column">
+                        {% if (tCalCon-tCalBurn) >= calRec and calRec != 0 %}<br>
+                            {{"Daily calorie goal met!"}}
+                            {{"Exceeded recommendation by "}}{{(tCalCon-tCalBurn)-calRec}}{{" C"}}
+                        {% endif %}
+                    </div>
+                    </div>
+                </div>
+            </div>
             </div>
             <div class="column">
             <form method="POST"> 
