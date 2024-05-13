@@ -1,8 +1,8 @@
 from flask import Flask, g, render_template, request, make_response, session, redirect, flash
-import sqlite3 
+import sqlite3
 import requests
 
-app = Flask(__name__) 
+app = Flask(__name__)
 app.secret_key = "mysecretkey"
 
 # Google API Keys
@@ -57,8 +57,8 @@ def create_account():
         user = cursor.fetchone()
         if not user:
             db.execute('INSERT INTO Login (username, email, password) VALUES (?,?,?);',[username,email,password])
-            db.execute('INSERT INTO Calories (username, calCon, calBurn) VALUES (?,?,?)',[username,0,0])
-            db.execute("INSERT INTO Goals (username,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);", 
+            db.execute('INSERT INTO Calories (username, calCon, calBurn, calRec) VALUES (?,?,?,?)',[username,0,0,0])
+            db.execute("INSERT INTO Goals (username,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);",
                     [username,0,0,0,0,0])
             db.commit()
             return redirect('/')
@@ -74,9 +74,8 @@ def homePage():
     else:
         userGoals = getGoals()
         calorie = calorieInfo()
-        print(calorie[4])
-        return render_template("homePage.html", usr = session['username'], 
-                               usrGoals = userGoals, userInfo = calorie[3], calories=calorie[0], 
+        return render_template("homePage.html", usr = session['username'],
+                               usrGoals = userGoals, userInfo = calorie[3], calories=calorie[0],
                                recommendations=calorie[1], macronutrients=calorie[2], status=calorie[4])
 
 @app.route('/goal_select', methods = ["GET","POST"])
@@ -101,7 +100,7 @@ def goalSelect():
                 goalThree = "on"
             goalFour = request.form.get("goalFour",False)
             goalFive = request.form.get("goalFive",False)
-            db.execute("INSERT OR REPLACE INTO Goals (username,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);", 
+            db.execute("INSERT OR REPLACE INTO Goals (username,goalOne,goalTwo,goalThree,goalFour,goalFive) VALUES (?,?,?,?,?,?);",
                     [session['username'],goalOne,goalTwo,goalThree,goalFour,goalFive])
             db.commit()
         return render_template("goalSelect.html", usr = session['username'])
@@ -123,7 +122,7 @@ def edit_profile():
                     [session['username'],gender,age,weight,heightFeet,heightInch,exerciseFreq])
             db.commit()
             flash('Profile updated successfully!', 'success')
-        return render_template('edit_profile.html', usr=session['username'])
+    return render_template('edit_profile.html', usr=session['username'])
 
 def getCalories():
     connection = sqlite3.connect('fitnessDatabase.db')
@@ -131,43 +130,49 @@ def getCalories():
     cursor.execute("SELECT * FROM Calories WHERE username=?",[session['username']])
     userCal = cursor.fetchone()
     connection.close()
+    print(userCal)
     calCon = userCal[1]
     calBurn = userCal[2]
-    return calCon,calBurn
+    calRec = userCal[3]
+    return calCon,calBurn,calRec
 
 @app.route('/calorie_tracker', methods=['GET','POST'])
 def calorie_tracker():
-    calCon, calBurn = getCalories()
-    if request.method == "POST":
-        db = getDB('./fitnessDatabase.db')
-        if 'caloriesConsumed' in request.form:
-            calConsumed = int(request.form.get('caloriesConsumed')) 
-            tCalCon = calConsumed + calCon
-            tCalBurn = calBurn
-            db.execute("REPLACE INTO Calories (username, calCon, calBurn) VALUES (?, ?, ?)",
-                       [session['username'], tCalCon, tCalBurn])
-            db.commit()
-            return render_template('calorieTracker.html',tCalCon=tCalCon, tCalBurn=tCalBurn)
-        elif 'caloriesBurned' in request.form:
-            calBurned = int(request.form.get('caloriesBurned'))
-            tCalCon = calCon
-            tCalBurn = calBurned + calBurn
-            db.execute("REPLACE INTO Calories (username, calCon, calBurn) VALUES (?, ?, ?)",
-                       [session['username'], tCalCon, tCalBurn])
-            db.commit()
-            return render_template('calorieTracker.html',tCalCon=tCalCon, tCalBurn=tCalBurn)
-        elif 'resetCon' in request.form:
-            db.execute("REPLACE INTO Calories (username, calCon, calBurn) VALUES (?, ?, ?)",
-                       [session['username'], 0, calBurn])
-            db.commit()
-            return render_template('calorieTracker.html',tCalCon=0, tCalBurn=calBurn)
-        elif 'resetBurn' in request.form:
-            db.execute("REPLACE INTO Calories (username, calCon, calBurn) VALUES (?, ?, ?)",
-                       [session['username'], calCon, 0])
-            db.commit()
-            return render_template('calorieTracker.html',tCalCon=calCon, tCalBurn=0)
+    if not 'username' in session:
+        return redirect("/")
     else:
-        return render_template('calorieTracker.html',tCalCon=calCon, tCalBurn=calBurn)
+        if request.method == "POST":
+            calCon,calBurn,calRec = getCalories()
+            db = getDB('./fitnessDatabase.db')
+            if 'caloriesConsumed' in request.form:
+                calConsumed = int(request.form.get('caloriesConsumed'))
+                tCalCon = calConsumed + calCon
+                tCalBurn = calBurn
+                db.execute("REPLACE INTO Calories (username, calCon, calBurn, calRec) VALUES (?, ?, ?, ?)",
+                        [session['username'], tCalCon, tCalBurn, calRec])
+                db.commit()
+                return render_template('calorieTracker.html',tCalCon=tCalCon, tCalBurn=tCalBurn, calRec=calRec)
+            elif 'caloriesBurned' in request.form:
+                calBurned = int(request.form.get('caloriesBurned'))
+                tCalCon = calCon
+                tCalBurn = calBurned + calBurn
+                db.execute("REPLACE INTO Calories (username, calCon, calBurn, calRec) VALUES (?, ?, ?, ?)",
+                        [session['username'], tCalCon, tCalBurn, calRec])
+                db.commit()
+                return render_template('calorieTracker.html',tCalCon=tCalCon, tCalBurn=tCalBurn, calRec=calRec)
+            elif 'resetCon' in request.form:
+                db.execute("REPLACE INTO Calories (username, calCon, calBurn, calRec) VALUES (?, ?, ?, ?)",
+                        [session['username'], 0, calBurn, calRec])
+                db.commit()
+                return render_template('calorieTracker.html',tCalCon=0, tCalBurn=calBurn, calRec=calRec)
+            elif 'resetBurn' in request.form:
+                db.execute("REPLACE INTO Calories (username, calCon, calBurn, calRec) VALUES (?, ?, ?, ?)",
+                        [session['username'], calCon, 0, calRec])
+                db.commit()
+                return render_template('calorieTracker.html',tCalCon=calCon, tCalBurn=0, calRec=calRec)
+        else:
+            calCon, calBurn, calRec = getCalories()
+            return render_template('calorieTracker.html',tCalCon=calCon, tCalBurn=calBurn, calRec=calRec)
 
 @app.route('/find_gyms', methods=['GET','POST'])
 def find_gyms():
@@ -183,6 +188,7 @@ def find_gyms():
 def calorieInfo():
     userInfo = getInfo()
     userGoals = getGoals()
+    calCon,calBurn,calRec = getCalories()
 
     if userInfo != "noEntry":
         gender = userInfo[1]
@@ -192,6 +198,8 @@ def calorieInfo():
         heightInch = userInfo[5]
         activityLevel = userInfo[6]
         status = "set"
+        goal = "gain"
+        focus = "muscle"
 
         if(userGoals[2]=="on" and userGoals[4]=="on" and userGoals[5]=="0"):
             goal = "gain"
@@ -222,9 +230,6 @@ def calorieInfo():
             focus = "fat"
         elif(userGoals[1]=="0" and userGoals[2]=="0" and userGoals[3]=="0" and userGoals[4]=="0" and userGoals[5]=="0"):
             status = "not_set"
-        else:
-            goal = "gain"
-            focus = "muscle"
 
         caloriesNeeded = calculate_daily_calories(weight,heightFeet,heightInch,age,gender,activityLevel,goal,focus)
         macronutrients = calculate_macronutrients(caloriesNeeded,goal,focus,activityLevel)
@@ -232,7 +237,13 @@ def calorieInfo():
             recommendations = get_diet_recommendations(goal, focus)
         else:
             recommendations = 0
-               
+
+        print(caloriesNeeded)
+        db = getDB('./fitnessDatabase.db')
+        db.execute("REPLACE INTO Calories (username,calCon,calBurn,calRec) VALUES (?,?,?,?)",
+                   [session['username'],calCon,calBurn,caloriesNeeded])
+        db.commit()
+
         return caloriesNeeded, recommendations, macronutrients, userInfo, status
     return None,None,None,None,None
 
@@ -290,7 +301,6 @@ def calculate_daily_calories(weight, height_feet, height_inches, age, gender, ac
     goal_multiplier = goal_factors.get((goal, focus), 1.0)
     calories *= goal_multiplier
 
-    print(calories)
     return round(calories)
 
 def calculate_macronutrients(calories, goal, focus, activity_level):
@@ -315,10 +325,6 @@ def calculate_macronutrients(calories, goal, focus, activity_level):
     protein = calories * protein_pct / 4  # 1 gram of protein = 4 calories
     fat = calories * fat_pct / 9          # 1 gram of fat = 9 calories
     carbs = calories * carbs_pct / 4      # 1 gram of carbs = 4 calories
-
-    print(round(protein))
-    print(round(fat))
-    print(round(carbs))
 
     return {
         'protein_grams': round(protein),
@@ -361,7 +367,7 @@ def geocode_address(address):
         return latitude, longitude
     else:
         return None
-    
+
 def get_nearby_gyms(city):
     coordinates = geocode_address(city)
     if coordinates:
